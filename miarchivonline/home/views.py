@@ -3,9 +3,11 @@ from django.http import HttpResponseRedirect
 from django import forms
 
 class FileForm(forms.Form):
-    user_email = forms.EmailField(label="user")
-    send_email = forms.EmailField(label="receiver")
-    file = forms.FileField()
+    user_email = forms.EmailField(label="Tu correo")
+    send_email = forms.EmailField(label="Correo Destinatario")
+    note = forms.CharField(label="Mensaje")
+    file = forms.FileField(label="Archivo")
+    
 
 
 # Create your views here.
@@ -19,6 +21,7 @@ def index(request):
             # Isolate the task from the 'cleaned' version of form data
             user_email = form.cleaned_data["user_email"]
             send_email = form.cleaned_data["send_email"]
+            note = form.cleaned_data['note']
             handle_uploaded_file(request.FILES['file'])
         else:
              # If the form is invalid, re-render the page with existing information.
