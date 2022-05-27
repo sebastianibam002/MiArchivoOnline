@@ -1,0 +1,418 @@
+# just a test
+# I will paint the first column of the bitmap red
+.data
+displayAddress: .word 0x10008000
+dark_green: .word 0x009E25
+green: .word  0x4FFA00
+blue: .word 0x0DA1FD
+brown: .word 0xED5007
+dark_brown: .word 0x993912
+black: .word 0x00120D
+purple: .word 0x7509B5
+white: .word 0xFFFFFF
+yellow: .word 0xFAB51E
+
+# array storing the cars initial positions
+cars_array: .space 12
+
+
+
+.text
+
+
+setup_game:
+	# This function, sets up the initial values of the constants
+	# take $s0 to be the position of the frog initially set to  
+	addi $s0, $zero, 3640
+	# take $s1 to be the position of one of the logs
+	addi $s1, $zero, 796
+	# take $s2 to be te initial position of the car
+	la $t0, cars_array
+	# now I will add the three initial positions
+	addi $s2, $zero, 2432
+	
+	# the second lane would be $s3 for the cars
+	
+
+
+	
+
+main:
+	# draws the static background
+	jal DRAW_BACKGROUND
+
+		
+	# MILESTONE 2
+	# check 
+	jal CONTROLS
+	
+	# Move the logs and the cars
+	
+	
+	# draws the initial poition of the frog
+	jal DRAW_FROG
+	jal DRAW_LOG
+	jal WRITE_ALL_CARS
+
+	
+	
+	# rerun the program each 60 miliseconds
+	addi $a0, $zero, 60
+	li $v0, 32
+	syscall 
+	j main
+
+WRITE_ALL_CARS:
+	# The game would have 4 cars and update all the positions
+	# add to the stack the position
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	#####################
+	# FIRST LINE OF ROAD
+	######################
+	
+	jal DRAW_CAR
+	# modify the position of the other one
+	# take $s1 to be the position of one of the cars
+	addi $s2, $s2, 60
+	jal DRAW_CAR
+	
+	
+	#####################
+	# SECOND LINE OF ROAD
+	####################
+	addi $s3, $zero, 2956
+	jal DRAW_CAR_SECOND_LINE
+	# modify the position of the other one
+	addi $s3, $s3, 60
+	jal DRAW_CAR_SECOND_LINE
+	
+	# take $s1 to be the position of one of the car
+	addi $s2, $zero, 2432
+	# addi $s2, $s2, 4
+	# might be better storing it into an array
+	# remove from the stack and go back
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+	
+
+CONTROLS:
+	# this function would check if there is a keuboard pressed and update the registers
+	# of the frog respectively
+	# add the value to the stack
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	lw $t8, 0xffff0000
+	beq $t8, 1, CHECK_DIRECTION
+	
+	# after finishing the check left
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+	
+	
+MOVE_LEFT:
+	# this function moves the frog to the left given that the key a was pressed
+	add $s0, $s0, -4
+	# pop from the stack
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+	
+MOVE_RIGHT:
+	# this function moves the frog to the right given that the key d was pressed
+	add $s0, $s0, 4
+	# pop from the stack
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+	
+MOVE_UP:
+	# this function moves the frog to the right given that the key W was pressed
+	add $s0, $s0, -128
+	# pop from the stack
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+
+MOVE_DOWN:
+	# this function moves the frog to the right given that the key S was pressed
+	add $s0, $s0, 128
+	# pop from the stack
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+
+
+	
+CHECK_DIRECTION:
+	# this function would check if it was the left key pressed
+	lw $t2, 0xffff0004
+	beq $t2, 0x61, MOVE_LEFT
+	beq $t2, 0x64, MOVE_RIGHT
+	beq $t2, 0x77, MOVE_UP
+	beq $t2, 0x73, MOVE_DOWN
+	beq $t2, 0X71, Exit
+	
+
+DRAW_LOG:
+	# this function will draw a log on the position of $s1	
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	# start of the rectangle
+	add $a0, $zero, $s1
+	# width 
+	addi $a1, $zero, 6
+	# height
+	addi $a2, $zero, 4 
+	# color
+	lw $a3, dark_brown 
+	jal DRAW_RECTANGLE
+	
+	# popping from the stack
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+
+REDUCE_OFFSET_CAR:
+	
+
+DRAW_CAR:
+	# this function will draw a car starting on the position $s2
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	#########################
+	#NOTE: 
+	# 	because it is a car, then we want to stay just on
+	#	the line that is permited, thus we must so some restrictions on the initial potion	
+	#############################
+	
+	addi $t0, $zero, 2408  
+	#beq $t0, $s2, 
+	# start of the rectangle
+	add $a0, $zero, $s2
+	# width 
+	addi $a1, $zero, 6
+	# height
+	addi $a2, $zero, 4 
+	# color
+	lw $a3, yellow 
+	jal DRAW_RECTANGLE
+	
+	# popping from the stack
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+	
+	
+DRAW_CAR_SECOND_LINE:
+	# this function will draw a car starting on the position $s2
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	# start of the rectangle
+	add $a0, $zero, $s3
+	# width 
+	addi $a1, $zero, 6
+	# height
+	addi $a2, $zero, 4 
+	# color
+	lw $a3, yellow 
+	jal DRAW_RECTANGLE
+	
+	# popping from the stack
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+
+DRAW_FROG:
+	# this function draws the frog starting on the position $s0
+	# adding the location to the stack
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	
+	# BODY OF THE FROG
+	# start of the rectangle
+	add $a0, $zero, $s0
+	# width 
+	addi $a1, $zero, 4
+	# height
+	addi $a2, $zero, 4 
+	# color
+	lw $a3, purple 
+	jal DRAW_RECTANGLE
+	
+	# EYES OF THE FROG
+	# start of the rectangle
+	add $a0, $zero, $s0
+	# width 
+	addi $a1, $zero, 1
+	# height
+	addi $a2, $zero, 2 
+	# color
+	lw $a3, white 
+	jal DRAW_RECTANGLE
+	# start of the rectangle
+	addi $a0, $s0, 12
+	# width 
+	addi $a1, $zero, 1
+	# height
+	addi $a2, $zero, 2 
+	# color
+	lw $a3, white 
+	jal DRAW_RECTANGLE
+	
+	# Pupils of the frog
+	# start of the rectangle
+	add $a0, $zero, $s0
+	# width 
+	addi $a1, $zero, 1
+	# height
+	addi $a2, $zero, 1 
+	# color
+	lw $a3, black 
+	jal DRAW_RECTANGLE
+	# start of the rectangle
+	addi $a0, $s0, 12
+	# width 
+	addi $a1, $zero, 1
+	# height
+	addi $a2, $zero, 1 
+	# color
+	lw $a3, black 
+	jal DRAW_RECTANGLE
+	
+	
+	
+	# popping from the stack
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+
+
+DRAW_BACKGROUND:
+	# this function draws the background
+		
+	# add the direction to the stack
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	# GRASS FROM THE END
+	# start of the rectangle
+	addi $a0, $zero, 0
+	# width 
+	addi $a1, $zero, 32
+	# height
+	addi $a2, $zero, 6 
+	# color
+	lw $a3, green 
+	jal DRAW_RECTANGLE
+	# RIVER
+	# start of the rectangle
+	addi $a0, $zero, 768
+	# width 
+	addi $a1, $zero, 32
+	# height
+	addi $a2, $zero, 8
+	# color
+	lw $a3, blue 
+	jal DRAW_RECTANGLE
+	# MIDDLE PART OF THE FIELD
+	addi $a0, $zero, 1792
+	# width 
+	addi $a1, $zero, 32
+	# height
+	addi $a2, $zero, 5
+	# color
+	lw $a3, brown 
+	jal DRAW_RECTANGLE
+	# Road 
+	addi $a0, $zero, 2432
+	# width 
+	addi $a1, $zero, 32
+	# height
+	addi $a2, $zero, 8
+	# color
+	lw $a3, black 
+	jal DRAW_RECTANGLE
+	# Initial Point 
+	addi $a0, $zero, 3456
+	# width 
+	addi $a1, $zero, 32
+	# height
+	addi $a2, $zero, 5
+	# color
+	lw $a3, dark_green 
+	jal DRAW_RECTANGLE
+	
+	# popping from the stack
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+	
+	
+
+END_FUNCTION:
+	addi $t2, $zero, 0
+ 	addi $t3, $zero, 0
+ 	addi $t4, $zero, 0
+ 	addi $t5, $zero, 0
+ 	addi $t1, $zero, 0
+ 	# popping from the stack
+ 	lw $ra, 0($sp)
+ 	addi $sp, $sp, 4
+ 	jr $ra
+ 	
+DRAW_RECTANGLE:
+	# add the value to the stack
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+
+	lw $t0, displayAddress # $t0 stores the base address for display
+	add $t1, $zero, $a3 # $t1 stores the green colour code
+
+ 	# draws a rectangle on the given point $t2
+ 	add $t2, $t0, $a0  # start of the rectangle xS
+	add $t3, $t3, $a1
+ 	j LOOPX
+ 	# reset the values of the tempraries
+ 	
+ 
+LOOPX:
+	# x part of the element
+	beqz $t3, END_FUNCTION
+	sw $t1, 0($t2) # paint
+	# add it to the register of y
+	add $t5, $t2, 0
+	addi $t2, $t2, 4
+	addi $t3, $t3, -1
+	# paint the other y componetn another loop
+	add $t4, $t4, $a2
+	
+	j LOOPY
+	j LOOPX
+
+
+LOOPY:
+	# x part of the element
+	beqz $t4, LOOPX
+	addi $t4, $t4, -1
+	sw $t1, 0($t5) # paint the first (top-left) unit red.
+	addi $t5, $t5, 128
+	
+	j LOOPY
+
+Exit:
+li $v0, 10 # terminate the program gracefully
+
+syscall

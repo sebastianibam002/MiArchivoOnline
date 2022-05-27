@@ -22,7 +22,7 @@
             <form action="{% url 'home:index' %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="row">
-                    <div class="col-md-3 p-3">
+                    <div class="col-md-4 p-4">
                         <div class="row pb-3">
                             {{ form.user_email|as_crispy_field }}
                         </div>
@@ -40,6 +40,14 @@
                           <button class="btn btn-outline-light" type="submit" value="Submit">Subir Archivo</button>
                         </div>
                             
+                       {% if link != "" %}
+                        <div class="row pb-3">
+                          <div id="link_holder" type="text" class="form-control" name="{{link}}"> {{link}} </div>  
+                        </div>
+                        <div class="row pb-3">
+                          <button id="copyLinkDirectly" class="btn btn-outline-light" type="button"> Copiar Enlace</button>
+                        </div>
+                        {% endif %}
                         
                         
                         
@@ -52,7 +60,7 @@
                     
                   -->
                   
-              <div class="col-md-9 p-3">
+              <div class="col-md-8 p-3">
                 <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
                   <div class="carousel-indicators">
                     <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -133,7 +141,6 @@
 <script>
 
     function changeStateOn(){
-        console.log("hey");
         $('#id_file').removeClass('form-control-file');
         $('#id_file').addClass('form-control');
     }
@@ -143,8 +150,22 @@
         input_field.style.color = 'blue'
     }
 
+     function copyPageUrl() {
+      
+      value = $('#link_holder').attr('name')
+   /* Copy the text inside the text field */
+  navigator.clipboard.writeText(value);
+
+/* Alert the copied text */
+alert("Copied the text: " + value);
+
+}
+
+    $('#copyLinkDirectly').click(copyPageUrl);
     
     $('document').ready(changeStateOn);
+
+    
     
     </script>
 

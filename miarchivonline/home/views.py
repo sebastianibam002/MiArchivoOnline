@@ -10,6 +10,7 @@ from .filesTools import generateUrl
 # Create your views here.
 
 def index(request):
+    share_link = ""
     if request.method == "POST":
          # Take in the data the user submitted and save it as form
         form = FileForm(request.POST, request.FILES)
@@ -21,6 +22,7 @@ def index(request):
             note = form.cleaned_data['note']
             # Create an url to access the file later that is different from the previous ones
             generated_url = generateUrl()
+            share_link = f"http://127.0.0.1:8000/myfile/{generated_url}"
             instance = UploadedFile(origin_email=user_email, destination_email=send_email, generated_url=generated_url, file=request.FILES['file'], date_sent=date.today())
             instance.save()
         else:
@@ -30,7 +32,8 @@ def index(request):
             })
 
     return render(request, "home/home.html", {
-        "form": FileForm()
+        "form": FileForm(),
+        "link": share_link
     })
 
 def handle_uploaded_file(f):
