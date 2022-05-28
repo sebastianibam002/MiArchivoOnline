@@ -1,1 +1,1 @@
-web: gunicorn miarchivonline.wsgi
+web: gunicorn miarchivonline.wsgi --log-file -
