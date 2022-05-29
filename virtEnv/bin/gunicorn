@@ -1,4 +1,4 @@
-#!/home/sebastian/Documents/MiArchivoOnline/MiArchivoOnline/virtEnv/bin/python
+#!/home/sebastian/Documents/MiArchivoOnline/miarchivonline/virtEnv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
