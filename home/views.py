@@ -22,7 +22,7 @@ def index(request):
             note = form.cleaned_data['note']
             # Create an url to access the file later that is different from the previous ones
             generated_url = generateUrl()
-            share_link = f"http://82.180.160.116:8000/myfile/{generated_url}"
+            share_link = f"http://82.180.160.116/myfile/{generated_url}"
             instance = UploadedFile(origin_email=user_email, destination_email=send_email, generated_url=generated_url, file=request.FILES['file'], date_sent=date.today())
             instance.save()
         else:
