@@ -172,12 +172,12 @@
 
     function copyPageUrl(element) {
       
-      if(navigator.clipboard) {
-    navigator.clipboard.writeText(text);
-  }
-  else{
-    alert(text);
-  }
+   /* Copy the text inside the text field */
+  navigator.clipboard.writeText(element);
+
+/* Alert the copied text */
+alert("Copied the text: " + element);
+
 }
 
 $('document').ready(changeStateOn);
