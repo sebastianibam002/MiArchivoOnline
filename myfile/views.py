@@ -13,6 +13,6 @@ def index(request, name):
 Returns the real name of the file
 """
 def getFileLink(code: str) -> str:
-    name = UploadedFile.objects.filter(generated_url= code)
+    name = UploadedFile.objects.filter(unique_link= code)
     if name.exists():
         return name[0].file
