@@ -16,10 +16,10 @@
     {% load crispy_forms_tags %}
     <div class="p-5 shadow-sm mb-4 bg-dark text-white rounded-3">
       <div class="row align-items-md-stretch">
-        <h1 class="display-5 fw-bold">Enviar Archivo</h1>
+        <h1 class="display-5 fw-bold">Enviar El Archivo</h1>
         
      
-            <form action="{% url 'home:index' %}" method="POST" enctype="multipart/form-data">
+            <form id="upload-form" action="" >
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-4 p-4">
@@ -35,7 +35,19 @@
                         <div class="row pb-3">
                           {{ form.file|as_crispy_field }} 
                         </div>
-                        
+
+			<div class="row pb-3">
+			<!-- 
+				PROGESS BAR
+			-->
+				<div id="progress-box" class="not-visible">
+					progress
+				</div>
+				<div id="cancel-box" class="not-visible">
+					<button id="cancel-btn" class="btn btn-danger"> Cancel </button>
+				</div>
+			</div>
+
                         <div class="row pb-3">
                           <button class="btn btn-outline-light" type="submit" value="Submit">Subir Archivo</button>
                         </div>
@@ -166,7 +178,52 @@ alert("Copied the text: " + value);
     $('document').ready(changeStateOn);
 
     
-    
+	const uploadForm = document.getElementById("upload-form");
+	// information of the user email and the destination email, plus the message
+	const userEmail = document.getElementById("id_user_email");
+	const sendEmail = document.getElementById("id_send_email");
+	const msgNote = document.getElementById("id_note");
+	// constains the file we are uploading
+	const inputFile = document.getElementById("id_file");
+	const progressBox = document.getElementById("progress-box");
+	const cancelBox = document.getElementById("cancel-box");
+	const cancelBtn = document.getElementById("cancel-btn");
+	const csrf = document.getElementById("csrfmiddlewaretoken");
+
+
+
+	inputFile.addEventListener('change', ()=> {
+		progressBox.classList.remove('not-visible');
+		cancelBox.classList.remove('not-visible');
+	
+		const file_data = input.files[0];
+		const fd = new FormData();
+		fd.append('csrfmiddlewaretoken', csrf[0].value);
+		fd.append('file', file_data);
+
+		$.ajax({.
+			type: 'POST',
+			url: uploadForm.action(),
+			enctype: 'multipart/form-data',
+			data: fd,
+			beforeSend: function(){
+			}
+				
+		}),
+		xhr: function (){
+		},
+		success: function(response){
+		},
+		error: function(error){
+		},
+		cache: false,
+		contentType: false,
+		processData: false,
+
+	})
+
+	
+
     </script>
 
 
