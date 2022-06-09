@@ -1,4 +1,5 @@
 from operator import mod
+from statistics import mode
 from django.db import models
 
 # Create your models here.
@@ -9,5 +10,7 @@ and the person who is going to receive the email with the file
 """
 class UploadedFile(models.Model):
     file = models.FileField()
+    unique_link = models.CharField(max_length=50)
+    date_sent = models.DateField()
     def __str__(self):
         return str(self.pk)
