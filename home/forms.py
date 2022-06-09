@@ -1,9 +1,10 @@
+from dataclasses import field
 from django import forms
+from .models import UploadedFile
   
-class FileForm(forms.Form):
-    user_email = forms.EmailField(label="Tu correo")
-    send_email = forms.EmailField(label="Correo Destinatario")
-    note = forms.CharField(label="Mensaje")
-    file = forms.FileField(label="Archivo")
+class FileForm(forms.ModelForm):
+    class Meta:
+        model = UploadedFile
+        fields = ('file', )
     
 
