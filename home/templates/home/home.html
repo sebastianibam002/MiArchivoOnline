@@ -19,17 +19,27 @@
 <div id="alert-box"></div>
 <div id="image-box"></div>
 
-
+{% load crispy_forms_tags %}
        
-              <form id="upload-form" action="" >
+              <form id="upload-form" action="">
                   {% csrf_token %}
                   <div class="row">
                       <div class="col-md-4 p-4">
+                        <div class="row pb-3">
+                          {{form.user_email |as_crispy_field }}
+                        </div>
+                        <div class="row pb-3">
+                          {{form.dest_email |as_crispy_field }}
+                        </div>
                           <div class="row pb-3">
-                            {{form.as_p}}
+                            {{form.file |as_crispy_field }}
                           </div>
+                          
                           <div class="row pb-3">
                             <div id="progress-box" class="not-visible">progress</div>
+                          </div>
+                           <div class="row pb-3">
+                            <button id="upload-file" class="btn btn-outline-light">Subir Archivo</button>
                           </div>
                         <div id="cancel-box"  class="row pb-3 not-visible">
                           
@@ -51,23 +61,15 @@
         </div>
 
       <div id="copy-link-text" class="row pb-3 not-visible">
-                            <div id="link_holder" type="text" class="form-control" name="{{generated_link}}"> {{generated_link}} </div>  
+                            <div id="link_holder" type="text" class="form-control text-wrap"  style="word-wrap: break-word;"  name="{{link}}"> {{link}} </div>  
                           </div>
-                          <div id="copy-link-btn" class="row pb-3 not-visible">
-                            <button id="copyLinkDirectly" class="btn btn-outline-light" type="button"> Copiar Enlace</button>
-                          </div>
-                          
-                          
-                          
+                      
                           
                       </div>
                       <!-- <button id="fileBut" class="btn btn-outline-light col-md-9 text-center" type="button">
                           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32" class="me-2" viewBox="0 0 118 94" role="img"><title>Bootstrap</title><path fill-rule="evenodd" clip-rule="evenodd" d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z" fill="currentColor"></path></svg>
                           <h2> Arrastra el Archivo </h2>
-                      </button>
-  
-                      
-                    -->
+                      </button>                 -->
                     
                 <div class="col-md-8 p-3">
                   <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
@@ -108,14 +110,8 @@
                       <span class="visually-hidden">Next</span>
                     </button>
                   </div>
-                </div>
-          
-                                  
+                </div>          
                   </div>
-                  
-                  
-                  
-                  
               </form>
               
       
@@ -145,20 +141,6 @@
       </footer>
     </div>
   </main>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -196,8 +178,13 @@ const linkHolder = document.getElementById('link_holder')
 const copyLinkText = document.getElementById('copy-link-text')
 const copyLinkBtn = document.getElementById('copy-link-btn')
 
-const csrf = document.getElementsByName('csrfmiddlewaretoken')
 
+const send_email = document.getElementById('id_user_email')
+const recieve_email = document.getElementById('id_dest_email')
+
+const submit_form = document.getElementById('upload-file')
+
+const csrf = document.getElementsByName('csrfmiddlewaretoken')
 input.addEventListener('change', ()=>{
     progressBox.classList.remove('not-visible')
     cancelBox.classList.remove('not-visible')
@@ -208,8 +195,10 @@ input.addEventListener('change', ()=>{
 
     const fd = new FormData()
     fd.append('csrfmiddlewaretoken', csrf[0].value)
+    fd.append('user_email', send_email.value)
+    fd.append('dest_email', recieve_email.value)
     fd.append('file', img_data)
-
+    console.log(fd)
     $.ajax({
         type:'POST',
         url: uploadForm.action,
@@ -246,19 +235,18 @@ input.addEventListener('change', ()=>{
             return xhr
         },
         success: function(response){
-            console.log(response)
-            const obj = JSON.stringify(response)
-            console.log(obj)
+
             alertBox.innerHTML = `<div class="alert alert-success" role="alert">
-                                    Successfully uploaded the image below
+                                    Successfully uploaded the file
                                 </div>`
             cancelBox.classList.add('not-visible')
             // show also a message to copy the link
+            console.log(response)
+            const link = JSON.stringify(response)
+            linkHolder.innerHTML = `${link.substring(9, link.length - 2)}`
             copyLinkText.classList.remove("not-visible")
             copyLinkBtn.classList.remove("not-visible")
             
-            linkHolder.innerHTML = `${obj.substring(9, obj.length - 2)}`
-            copyPageUrl(obj.substring(9, obj.length - 2))
         },
         error: function(error){
             console.log(error)

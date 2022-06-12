@@ -16,15 +16,18 @@ def index(request):
     form = FileForm(request.POST or None,  request.FILES or None)
     share_link = ""
     if is_ajax(request):
+        print("Form Errors")
+        print(form.errors)  
         if form.is_valid():
+            print("form is valid")
             generated_url = generateUrl()
             share_link = f"http://82.180.160.116/myfile/{generated_url}"
             # instance = UploadedFile(unique_link=generated_url, file=request.FILES['file'], date_sent=date.today())
             instance = UploadedFile(file=request.FILES['file'], unique_link=generated_url,  date_sent=date.today())
             instance.save()
-            return JsonResponse({'link': share_link})
-
+            return JsonResponse({'link': share_link })
+            
     return render(request, "home/home.html", {
         "form": FileForm,
-        "generated_link": share_link
+        "link": share_link
     })
